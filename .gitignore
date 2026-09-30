@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 运行时产物（scan/run 的知识库输出目录，含用户项目信息，勿提交）
+my-*/
+kb/
+
+# LLM 密钥等敏感配置，严禁提交
+.env
+.kbflow.env
+.kbflow/

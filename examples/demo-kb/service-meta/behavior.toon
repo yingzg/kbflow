@@ -1,0 +1,19 @@
+metadata:
+  entry_count: 5
+dubbo:
+  with_doc[2]{id,class_name,package,doc,methods}:
+    API-001,StockServiceImpl,com.example.stock,库存服务：负责库存查询与扣减,deductStock(扣减库存);getAvailableStock(查询可用库存);getStockRecord(查询库存记录)
+    API-002,TransferServiceImpl,com.example.wms.transfer,调拨服务：负责调拨单从创建到确认的全生命周期,createTransfer(创建调拨单);approveOrder(审批调拨单);confirmTransfer(确认调拨单（扣减库存并落库）);cancelOrder(取消调拨单);getTransferDetail(查询调拨单详情)
+  no_doc[0]:
+rest:
+  with_doc[1]{id,class_name,package,doc,methods}:
+    API-003,TransferController,com.example.wms.transfer,"",create(创建调拨单)
+  no_doc[0]:
+mq:
+  with_doc[1]{id,class_name,package,doc,methods}:
+    API-004,TransferMqConsumer,com.example.wms.transfer,调拨单消息消费者,onMessage(调拨单消息消费者)
+  no_doc[0]:
+job:
+  with_doc[1]{id,class_name,package,doc,methods}:
+    API-005,StockSyncJob,com.example.stock,库存同步定时任务,syncStock(每日凌晨同步库存)
+  no_doc[0]:

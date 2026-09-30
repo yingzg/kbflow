@@ -1,0 +1,8 @@
+internal_prefixes[2]: com.example.stock,com.example.wms
+interfaces[1]{id,name,package,maven}:
+  I1,StockService,com.example.stock,""
+by_annotation[1]{class,field,interface_ref}:
+  TransferManager,stockService,I1
+by_xml[0]:
+mavens:
+  stock-api: "com.example.stock:stock-api (1.0.0)"

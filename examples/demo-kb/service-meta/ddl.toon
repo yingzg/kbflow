@@ -1,0 +1,3 @@
+tables[2]{name,ddl}:
+  transfer_order,"CREATE TABLE transfer_order (\n    transfer_no VARCHAR(64) PRIMARY KEY COMMENT '调拨单号',\n    sku VARCHAR(64) COMMENT 'SKU',\n    qty INT COMMENT '数量',\n    target_warehouse VARCHAR(64) COMMENT '目标仓库',\n    status VARCHAR(16) COMMENT '状态'\n) COMMENT='调拨单主表';"
+  stock_record,"CREATE TABLE stock_record (\n    sku VARCHAR(64) PRIMARY KEY COMMENT 'SKU',\n    quantity INT COMMENT '库存数量'\n) COMMENT='库存记录表';"

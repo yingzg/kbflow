@@ -1,0 +1,10 @@
+service_info:
+  name: transfer-service
+  domain: 调拨
+  description: "[待AI补充]"
+scenarios[5]{id,entry_class,name,trigger,desc}:
+  SC-001,StockServiceImpl,库存服务：负责库存查询与扣减,dubbo,"[待AI补充]"
+  SC-002,TransferServiceImpl,调拨服务：负责调拨单从创建到确认的全生命,dubbo,"[待AI补充]"
+  SC-003,TransferController,transfer controller,rest,"[待AI补充]"
+  SC-004,TransferMqConsumer,调拨单消息消费者,mq,"[待AI补充]"
+  SC-005,StockSyncJob,库存同步定时任务,job,"[待AI补充]"

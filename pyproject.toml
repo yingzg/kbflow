@@ -1,0 +1,13 @@
+[project]
+name = "kbflow"
+version = "0.1.0"
+description = "Turn Java codebases into a structured domain knowledge base"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+http = ["httpx"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

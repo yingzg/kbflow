@@ -1,0 +1,24 @@
+nodes:
+  entries[5]{id,class,type}:
+    N0001,StockServiceImpl,dubbo
+    N0002,TransferServiceImpl,dubbo
+    N0003,TransferController,rest
+    N0004,TransferMqConsumer,mq
+    N0005,StockSyncJob,job
+  services[4]{id,class,pkg}:
+    S0001,StockCacheManager,com.example.stock
+    S0002,TransferManager,com.example.wms.transfer
+    S0003,TransferOrderMapper,com.example.wms.transfer
+    S0004,TransferService,com.example.wms.transfer
+  external[1]{id,class}:
+    E0001,StockService
+edges:
+  internal[4]{from,to,kind}:
+    N0001,S0001,injection
+    N0002,S0002,injection
+    S0002,S0003,injection
+    N0003,S0004,injection
+  external[1]{from,to,kind}:
+    S0002,E0001,dubbo_reference
+unresolved[1]{interface,from}:
+  Object>,StockCacheManager

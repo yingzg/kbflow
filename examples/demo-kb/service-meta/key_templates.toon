@@ -1,0 +1,6 @@
+key_templates[5]{id,kind,class_name,method_name,pattern,variables,business_desc}:
+  KEY-001,cache,StockCacheManager,getCached,"{key}",key,读取库存缓存
+  KEY-002,cache,StockCacheManager,getCached,"{key}",key,读取库存缓存
+  KEY-003,cache,StockCacheManager,evict,"STOCK_CACHE_KEY{sku}",sku,失效库存缓存
+  KEY-004,idempotent,StockCacheManager,deductIdempotent,"stock:idem:{sku}",sku,幂等扣减
+  KEY-005,lock,TransferManager,confirm,"transfer:lock:{transferNo}",transferNo,确认调拨单：加分布式锁防并发，扣减库存
