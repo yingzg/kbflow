@@ -2,6 +2,7 @@ import hashlib
 from pathlib import Path
 
 MAPPINGS = {
+    "prompts": {"source": "kbflow/prompts", "target": ".kbflow/prompts"},
     "stages": {"source": "kbflow/stages", "target": ".kbflow/stages"},
     "scanners": {"source": "kbflow/scanners", "target": ".kbflow/scanners"},
     "gates": {"source": "kbflow/gates", "target": ".kbflow/gates"},

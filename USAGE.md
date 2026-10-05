@@ -35,15 +35,26 @@ cat /tmp/demo-kb/service-meta/behavior.toon
 
 > 核心建议：先以「单个服务」为粒度扫，不要一次扫整个多服务 mono-repo 根目录。
 
-### 第 1 步：完整流程（每阶段开新窗口 @ 对应文档）
+### 第 1 步：初始化知识库 + 同步框架
 
-在 AI IDE（opencode / codex / claude code）里，**每个阶段开一个新窗口**，`@` 该阶段的 md 文档。阶段间靠产物文件交接，每个窗口只跑一个阶段：
+```bash
+python kbflow.py init my-kb     # 初始化知识库目录
+python kbflow.py sync my-kb     # 同步 KBFlow 框架（prompts + 工具）到 my-kb/.kbflow/
+```
+
+框架和知识库分离：KBFlow 框架（prompts + 工具）通过 `sync` 分发到知识库项目的 `.kbflow/`，知识库项目（产物）和框架（怎么构建）各自独立。
+
+### 第 2 步：每阶段开新窗口 @ 同步后的 Prompt
+
+在 AI IDE（opencode / codex / claude code）里，**每个阶段开一个新窗口**，`@` 同步后的 Prompt。阶段间靠产物文件交接，每个窗口只跑一个阶段：
 
 ```
-# 窗口 1：@kbflow/prompts/K01-事实扫描.md → AI 执行 scan → 关窗口
-# 窗口 2：@kbflow/prompts/K02-领域划分.md → AI 读 K01 产物 → 聚类 → 关窗口
-# 窗口 3：@kbflow/prompts/K03-边界确认.md → ... 直到 K08
+# 窗口 1：@my-kb/.kbflow/prompts/K01-事实扫描.md → AI 执行 scan → 关窗口
+# 窗口 2：@my-kb/.kbflow/prompts/K02-领域划分.md → AI 读 K01 产物 → 聚类 → 关窗口
+# 窗口 3：@my-kb/.kbflow/prompts/K03-边界确认.md → ... 直到 K08
 ```
+
+产物输出到 `my-kb/`（service-meta + 领域目录）。框架升级后重新 `sync` 即可，产物不受影响。
 
 **为什么每阶段开新窗口**：AI 上下文有限，串 8 阶段会溢出。每个窗口只跑一个阶段、只读「当前阶段 + 上一阶段产物」，上下文短。一个阶段跑完按 enter 关窗口，开新窗口 @ 下一阶段。
 
