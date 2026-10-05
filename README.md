@@ -46,17 +46,17 @@ python kbflow.py scan /path/to/java-project -o my-kb
 
 产出 `my-kb/service-meta/` 下的事实文件：`behavior.toon`（入口）、`topology.toon`（依赖拓扑）、`ddl.toon`（表结构）、`mapper_tables.toon`（Mapper→表）、`key_templates.toon`（Key 模板）等。
 
-### 2. K02-K08 由 AI IDE 驱动
+### 2. K01-K08 由 AI IDE 驱动（@ 一次总入口，自动推进）
 
-开 AI IDE（opencode / codex / claude code），`@` 引用对应阶段的 md 文档，按文档逐阶段执行：
+开 AI IDE（opencode / codex / claude code），`@` 一次总入口文档，AI 自动按 K01→K08 逐阶段推进，每个阶段完成后停下来等你按 Enter 确认：
 
-```bash
-# K01 跑完后，在 AI IDE 里：
-@kbflow/prompts/K02-领域划分.md    # AI 读文档 → 聚类领域 → 调 matrix/json2toon
-@kbflow/prompts/K03-边界确认.md    # AI 评分 → checklist 生成复核清单
-@kbflow/prompts/K04-领域知识.md    # AI 调 skeleton 生成骨架 → 补语义
-...
 ```
+@kbflow/prompts/README.md
+```
+
+AI 读总入口后，会先问你「项目路径 + 输出目录」，然后自动执行 K01（scan）→ 停下等你 Enter → K02（领域划分）→ 停下等你 Enter → ... → K08。
+
+**不用每个阶段手动 @ 一次**——总入口里写明了阶段顺序和暂停点，AI 读一次就能自动推进，每阶段结束停下等人工确认。
 
 ### 3. 确定性工具命令（AI 通过 md 文档调用）
 

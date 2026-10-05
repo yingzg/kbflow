@@ -53,25 +53,29 @@ python kbflow.py scan /path/to/your-service -o my-kb
 
 **检查**：打开 `behavior.toon` 看入口清单是否合理——有没有漏扫、有没有扫进纯技术模块的噪音。
 
-### 第 2 步：K02-K08 由 AI IDE 驱动
+### 第 2 步：K01-K08 由 AI IDE 驱动（@ 一次总入口，自动推进）
 
-在 AI IDE（opencode / codex / claude code）里，逐阶段 `@` 引用 md 文档执行：
+在 AI IDE（opencode / codex / claude code）里，`@` 一次总入口文档：
 
 ```
-@kbflow/prompts/K02-领域划分.md   → AI 聚类领域 + 分类入口，🛑 人工确认领域清单
-@kbflow/prompts/K03-边界确认.md   → AI 四维评分，🛑 人工填写复核清单
-@kbflow/prompts/K04-领域知识.md   → AI 调 skeleton 生成骨架 → 补服务概述语义
-@kbflow/prompts/K05-跨服务链路.md → AI 补领域总览语义
-@kbflow/prompts/K06-服务元信息.md → AI 补服务定位语义
-@kbflow/prompts/K07-全局导航.md   → 全景图 + AI 索引
-@kbflow/prompts/K08-可读性交付.md → glossary + 自然语言概述
+@kbflow/prompts/README.md
 ```
+
+AI 读总入口后，自动按 K01→K08 逐阶段推进：
+
+1. AI 先问你「项目路径 + 输出目录」
+2. 自动执行 K01（scan）→ 停下等 Enter
+3. Enter 后执行 K02（领域划分，🛑 人工确认领域）→ 停下等 Enter
+4. Enter 后执行 K03（评分，🛑 人工复核）→ 停下等 Enter
+5. ... 直到 K08 完成
+
+**不用每个阶段手动 @ 一次**——总入口文档写明了阶段顺序和暂停点，AI 读一次就自动推进，每阶段结束停下等人工确认。
 
 每个阶段的 md 文档写清楚了「读什么 → 调什么脚本 → AI 做什么 → 门禁 → 暂停点」。主流程只做编排，具体 AI 语义在 `skill-*.md` 子文档里。
 
 **只有两处会停**：K02 确认领域清单、K03 低置信度复核——「人给裁决，AI 做苦力」。
 
-**断点续跑**：产物文件已存在就跳过该阶段，中断后重新 `@` 对应 md 文档即可从断点继续。
+**断点续跑**：产物文件已存在就跳过该阶段，中断后重新 `@` 总入口即可从断点继续。
 
 ### 确定性工具命令（AI 通过 md 文档自动调用，一般不用手动跑）
 
