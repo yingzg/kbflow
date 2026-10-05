@@ -46,17 +46,17 @@ python kbflow.py scan /path/to/java-project -o my-kb
 
 产出 `my-kb/service-meta/` 下的事实文件：`behavior.toon`（入口）、`topology.toon`（依赖拓扑）、`ddl.toon`（表结构）、`mapper_tables.toon`（Mapper→表）、`key_templates.toon`（Key 模板）等。
 
-### 2. K01-K08 由 AI IDE 驱动（@ 一次总入口，自动推进）
+### 2. K02-K08 由 AI IDE 驱动（每阶段开新窗口）
 
-开 AI IDE（opencode / codex / claude code），`@` 一次总入口文档，AI 自动按 K01→K08 逐阶段推进，每个阶段完成后停下来等你按 Enter 确认：
+在 AI IDE（opencode / codex / claude code）里，**每个阶段开一个新窗口**，`@` 该阶段的 md 文档：
 
 ```
-@kbflow/prompts/README.md
+# 窗口 1：@kbflow/prompts/K01-事实扫描.md → scan → 关闭窗口
+# 窗口 2：@kbflow/prompts/K02-领域划分.md → 读 K01 产物 → 聚类 → 关闭窗口
+# 窗口 3：@kbflow/prompts/K03-边界确认.md → ...
 ```
 
-AI 读总入口后，会先问你「项目路径 + 输出目录」，然后自动执行 K01（scan）→ 停下等你 Enter → K02（领域划分）→ 停下等你 Enter → ... → K08。
-
-**不用每个阶段手动 @ 一次**——总入口里写明了阶段顺序和暂停点，AI 读一次就能自动推进，每阶段结束停下等人工确认。
+**为什么每阶段开新窗口**：阶段间靠产物文件交接，每个窗口只读「当前阶段 + 上一阶段产物」，上下文短、不溢出。AI 上下文有限，串 8 阶段会溢出——这正是「阶段化」的设计目的。
 
 ### 3. 确定性工具命令（AI 通过 md 文档调用）
 
