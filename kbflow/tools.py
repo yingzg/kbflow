@@ -148,7 +148,7 @@ def cmd_skeleton(args):
     elif kind == "data-model":
         out = Path(output) / domain / service / "03-数据模型.toon"
         interface = generate_interface_skeleton(entries, topology, tables, mapper_tables)
-        data = generate_data_model_skeleton(tables, interface["entry_tables"], entries)
+        data = generate_data_model_skeleton(service, domain, tables, interface["entry_tables"], entries)
     elif kind == "domain-overview":
         out = Path(output) / domain / "01-领域总览.toon"
         data = build_domain_overview(domain, service, entries)

@@ -57,9 +57,9 @@ def test_data_model_table_class_map():
     tables = [{"name": "transfer_order", "ddl": "CREATE TABLE transfer_order (...);"}]
     entry_tables = [{"entry_id": "API-001", "tables": "transfer_order"}]
     entries = [{"id": "API-001", "class_name": "TransferServiceImpl"}]
-    data_model = generate_data_model_skeleton(tables, entry_tables, entries)
-    assert data_model["table_class_map"][0]["table"] == "transfer_order"
-    assert "TransferServiceImpl" in data_model["table_class_map"][0]["entry_classes"]
+    data_model = generate_data_model_skeleton("svc", "库存", tables, entry_tables, entries)
+    assert data_model["table_class_map"][0]["name"] == "transfer_order"
+    assert "TransferServiceImpl" in data_model["table_class_map"][0]["classes"]
 
 
 def test_extract_tables_from_sql():

@@ -13,7 +13,7 @@ def test_domain_overview_with_business_processes():
          "doc": "", "methods": ""},
     ]
     overview = build_domain_overview("政策管理", "transfer-service", entries)
-    assert overview["domain"] == "政策管理"
+    assert overview["domain_info"]["name"] == "政策管理"
     assert overview["services"][0]["name"] == "transfer-service"
     assert len(overview["business_processes"]) == 2
     assert overview["business_processes"][0]["entry_api"] == "BocAppProviderImpl"

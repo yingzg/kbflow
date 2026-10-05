@@ -35,6 +35,17 @@ def generate_overview_skeleton(domain_name, service_name, entries):
             "description": PLACEHOLDER,
             "core_responsibilities": PLACEHOLDER,
         },
+        "service_boundaries": {
+            "owns": PLACEHOLDER,
+            "delegates_to": PLACEHOLDER,
+            "provides_to": PLACEHOLDER,
+        },
+        "dependencies": {
+            "upstream": PLACEHOLDER,
+            "downstream": PLACEHOLDER,
+            "mq_upstream": PLACEHOLDER,
+            "mq_downstream": PLACEHOLDER,
+        },
         "scenarios": by_priority,
     }
 
@@ -121,7 +132,7 @@ def generate_interface_skeleton(entries, topology, tables, mapper_tables=None):
     }
 
 
-def generate_data_model_skeleton(tables, entry_tables, entries):
+def generate_data_model_skeleton(service_name, domain_name, tables, entry_tables, entries):
     entry_id_to_class = {e["id"]: e["class_name"] for e in entries}
     table_classes = {}
     for et in entry_tables:
@@ -132,8 +143,13 @@ def generate_data_model_skeleton(tables, entry_tables, entries):
                 if class_name and class_name not in table_classes[t]:
                     table_classes[t].append(class_name)
     return {
+        "metadata": {
+            "service": service_name,
+            "domain": domain_name,
+            "table_count": len(tables),
+        },
         "table_class_map": [
-            {"table": t, "entry_classes": "|".join(cs)}
+            {"name": t, "comment": PLACEHOLDER, "classes": "|".join(cs)}
             for t, cs in table_classes.items()
         ],
         "table_schemas": [{"table": t["name"], "ddl": t["ddl"]} for t in tables],
