@@ -1,6 +1,8 @@
-# KBFlow Prompt 文档
+# KBFlow 启动文档
 
-本目录是 KBFlow 的「流程定义」——每个阶段一份独立 md 文档，供 AI IDE（opencode / codex / claude code）逐阶段执行。
+这是 KBFlow 的**启动入口**。从这里开始：了解流程怎么走，然后按阶段清单逐阶段开新窗口执行。
+
+本目录的 `K01`~`K08` 是各阶段的执行文档，供 AI IDE（opencode / codex / claude code）逐阶段执行。
 
 ## 分工边界
 
