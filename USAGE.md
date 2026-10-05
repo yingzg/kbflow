@@ -35,33 +35,16 @@ cat /tmp/demo-kb/service-meta/behavior.toon
 
 > 核心建议：先以「单个服务」为粒度扫，不要一次扫整个多服务 mono-repo 根目录。
 
-### 第 1 步：K01 事实扫描（纯脚本）
+### 第 1 步：完整流程（AI IDE @ 文档驱动，所有阶段）
 
-```bash
-python kbflow.py scan /path/to/your-service -o my-kb
-```
-
-产出 `my-kb/service-meta/` 的事实文件：
-
-| 文件 | 内容 |
-|---|---|
-| `behavior.toon` | 业务入口（Dubbo/REST/MQ/Job） |
-| `topology.toon` | 类级依赖拓扑 |
-| `ddl.toon` | 数据库表结构 |
-| `mapper_tables.toon` | Mapper 类 → 表名映射 |
-| `key_templates.toon` | 锁/缓存/幂等/分片 Key 模板 |
-
-**检查**：打开 `behavior.toon` 看入口清单是否合理——有没有漏扫、有没有扫进纯技术模块的噪音。
-
-### 第 2 步：K01-K08 由 AI IDE 驱动（每阶段开新窗口）
-
-在 AI IDE（opencode / codex / claude code）里，**每个阶段开一个新窗口**，`@` 该阶段的 md 文档：
+在 AI IDE（opencode / codex / claude code）里，**每个阶段开一个新窗口**，`@` 该阶段的 md 文档。**所有命令（包括 K01 的 scan）都是 AI 读文档后自己执行的，用户从头到尾只做「@ 文档 + 开新窗口」**：
 
 ```
-# 窗口 1：@kbflow/prompts/K01-事实扫描.md  → scan → 关闭窗口
-# 窗口 2：@kbflow/prompts/K02-领域划分.md  → 读 K01 产物 → 聚类 → 关闭窗口
-# 窗口 3：@kbflow/prompts/K03-边界确认.md  → 评分 → 关闭窗口
-# ... 直到 K08
+# 窗口 1：@kbflow/prompts/K01-事实扫描.md
+#   → AI 读文档，自己执行 scan 脚本，产物落盘 service-meta/，关闭窗口
+# 窗口 2：@kbflow/prompts/K02-领域划分.md
+#   → AI 读 K01 产物，聚类领域，产物落盘，关闭窗口
+# 窗口 3：@kbflow/prompts/K03-边界确认.md → ... 直到 K08
 ```
 
 **为什么每阶段开新窗口**：阶段间靠产物文件交接（产物落在磁盘，下一阶段读文件），每个窗口只读「当前阶段 + 上一阶段产物」，上下文短、不溢出。AI 上下文有限，串 8 阶段会溢出——这正是「阶段化」的设计目的。
@@ -69,6 +52,8 @@ python kbflow.py scan /path/to/your-service -o my-kb
 **只有两处会停**：K02 确认领域清单、K03 低置信度复核——「人给裁决，AI 做苦力」。
 
 **断点续跑**：产物文件已存在就跳过该阶段，中断后从断点阶段重新开窗口即可。
+
+> `scan` 等脚本命令也可手动 bash 跑（调试用）；标准流程是 AI 在 AI IDE 里执行。
 
 ### 确定性工具命令（AI 通过 md 文档自动调用，一般不用手动跑）
 

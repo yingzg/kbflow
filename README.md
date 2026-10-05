@@ -38,25 +38,21 @@ kbflow/scanners/ + tools  ← 确定性事实提取 + 工具命令
 
 ## 用法
 
-### 1. K01 事实扫描（纯脚本，无需 AI）
+### 1. 完整流程（AI IDE @ 文档驱动，所有阶段）
 
-```bash
-python kbflow.py scan /path/to/java-project -o my-kb
-```
-
-产出 `my-kb/service-meta/` 下的事实文件：`behavior.toon`（入口）、`topology.toon`（依赖拓扑）、`ddl.toon`（表结构）、`mapper_tables.toon`（Mapper→表）、`key_templates.toon`（Key 模板）等。
-
-### 2. K02-K08 由 AI IDE 驱动（每阶段开新窗口）
-
-在 AI IDE（opencode / codex / claude code）里，**每个阶段开一个新窗口**，`@` 该阶段的 md 文档：
+在 AI IDE（opencode / codex / claude code）里，**每个阶段开一个新窗口**，`@` 该阶段的 md 文档。**所有命令（包括 K01 的 scan）都是 AI 读文档后自己执行的，用户从头到尾只做「@ 文档 + 开新窗口」**：
 
 ```
-# 窗口 1：@kbflow/prompts/K01-事实扫描.md → scan → 关闭窗口
-# 窗口 2：@kbflow/prompts/K02-领域划分.md → 读 K01 产物 → 聚类 → 关闭窗口
-# 窗口 3：@kbflow/prompts/K03-边界确认.md → ...
+# 窗口 1：@kbflow/prompts/K01-事实扫描.md
+#   → AI 读文档，自己执行 scan 脚本，产物落盘 service-meta/，关闭窗口
+# 窗口 2：@kbflow/prompts/K02-领域划分.md
+#   → AI 读 K01 产物，聚类领域，产物落盘，关闭窗口
+# 窗口 3：@kbflow/prompts/K03-边界确认.md → ... 直到 K08
 ```
 
 **为什么每阶段开新窗口**：阶段间靠产物文件交接，每个窗口只读「当前阶段 + 上一阶段产物」，上下文短、不溢出。AI 上下文有限，串 8 阶段会溢出——这正是「阶段化」的设计目的。
+
+> `scan` 等脚本命令也可以手动在 bash 里跑（调试用），但标准流程是 AI 在 AI IDE 里执行。
 
 ### 3. 确定性工具命令（AI 通过 md 文档调用）
 
