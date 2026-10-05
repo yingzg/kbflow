@@ -10,7 +10,7 @@
 
 > **脚本提取事实，AI 理解语义，TOON 衔接。**
 
-确定性工作交给脚本（零 token 成本、可重复），语义归纳交给模型（脚本做不到的归纳与判断），两者用紧凑的 TOON 格式衔接。
+确定性工作交给脚本（零 token 成本、可重复），语义归纳交给 AI（脚本做不到的归纳与判断），两者用紧凑的 TOON 格式衔接。
 
 三个关键设计：
 
@@ -18,59 +18,71 @@
 2. **四档门禁**：自动修复 / 硬阻断 / 告警继续 / 人工裁决，每个阶段收尾有明确校验。
 3. **派生 vs 校验**：TOON 是唯一真相源；导航/自然语言文档是派生视图，每次重生成，保证地图永远和知识一致。
 
-## 流水线
+## 架构：AI IDE 驱动（Prompt 即程序）
+
+KBFlow 是「AI IDE 驱动」的框架，分两层：
 
 ```
-run（交互式向导，一步下一步）── 内部依次执行：
-  scan(K01) → divide(K02) → confirm(K03) → knowledge(K04) → cross(K05)
-  → meta(K06) → index(K07) → narrate(K08)
-sync(框架→知识库，独立)
+kbflow/prompts/           ← 流程编排 + AI 语义指令（K01-K08 主流程 + skill 子文档）
+kbflow/scanners/ + tools  ← 确定性事实提取 + 工具命令
 ```
 
-**推荐用法：一条命令启动向导** `python kbflow.py run <项目路径>`，交互式推进 8 阶段，只在 K02（领域确认）、K03（低置信度复核）两处暂停等人工裁决。每个阶段也有独立命令可单独跑。
+- **md Prompt 文档做「编排」**：主流程只写「读什么 → 调什么脚本 → 调什么 skill → 门禁 → 暂停点」，AI 语义的实现放在 `skill-*.md` 子文档里。
+- **脚本做「事实」**：扫描器提取类名、注释、方法、表结构、依赖关系——确定性、可重复。
+- **AI IDE 做「语义」**：读 md 文档，理解流程，聚类领域、评分、补服务概述。
 
-| 命令 | 阶段 | 产出 |
-|---|---|---|
-| `init` | 初始化 | projects.toon |
-| `scan` | K01 事实 | 入口/依赖/拓扑/DDL/Key模板（纯脚本） |
-| `divide` | K02 归属 | 领域建议 + 边界矩阵（LLM + 人工确认） |
-| `confirm` | K03 确认 | 四维评分 + 复核决策（LLM + 人工） |
-| `knowledge` | K04 领域知识 | 服务概述/接口链路/数据模型（三桶骨架） |
-| `cross` | K05 跨服务 | 领域总览/跨服务链路 |
-| `meta` | K06 元信息 | 架构/技术栈/开发规范 |
-| `index` | K07 导航 | AI 索引/全景图/使用协议（纯派生） |
-| `narrate` | K08 可读性 | glossary + 自然语言文档（累积 + 派生） |
-| `sync` | 同步 | 框架→知识库文件同步 |
+读写约定（省 token + 防错）：
 
-**阶段间靠产物文件交接**，每个阶段独立命令、可开新窗口跑，天然隔离上下文（AI 的上下文是有限的，串 7 阶段会溢出）。
+- **读**：AI 直接读 `.toon` 紧凑格式（比 JSON 省 40-60% token）
+- **写**：AI 输出 json，用 `json2toon` 命令转 toon 落盘（AI 手写 toon 易错）
 
-## 快速开始
+## 用法
+
+### 1. K01 事实扫描（纯脚本，无需 AI）
 
 ```bash
-# 1. 配置 LLM（K01 纯脚本不需要，K02 起需要；只需配一次）
-python kbflow.py config
-#   交互式填入 API Key / Base URL / Model，自动写入 ~/.kbflow/config.ini
-#   也可以手动参考项目根目录的 config.example.ini（任何 OpenAI 兼容服务都行）
-
-# 2. 一条命令启动交互式向导，一步下一步构建完整知识库
-python kbflow.py run /path/to/java-project -o my-kb
-
-# 或者逐阶段单独跑（细粒度控制）：
-python kbflow.py scan /path/to/java-project -o my-kb   # K01 纯脚本
-python kbflow.py divide -o my-kb                        # K02 领域划分
-python kbflow.py confirm -o my-kb                       # K03 边界确认
-python kbflow.py knowledge 调拨 transfer-service -o my-kb  # K04 领域知识
-python kbflow.py index -o my-kb                         # K07 全局导航
-python kbflow.py narrate 调拨 transfer-service -o my-kb # K08 可读性交付
+python kbflow.py scan /path/to/java-project -o my-kb
 ```
 
-> **LLM 配置说明**：`kbflow.py config` 生成 `~/.kbflow/config.ini`。`api_key` / `base_url` / `model` 三者必须指向同一个服务（OpenAI 官方、DeepSeek、中转服务均可）。读取优先级：环境变量 > `.env` > `config.ini` > 默认值。
+产出 `my-kb/service-meta/` 下的事实文件：`behavior.toon`（入口）、`topology.toon`（依赖拓扑）、`ddl.toon`（表结构）、`mapper_tables.toon`（Mapper→表）、`key_templates.toon`（Key 模板）等。
+
+### 2. K02-K08 由 AI IDE 驱动
+
+开 AI IDE（opencode / codex / claude code），`@` 引用对应阶段的 md 文档，按文档逐阶段执行：
+
+```bash
+# K01 跑完后，在 AI IDE 里：
+@kbflow/prompts/K02-领域划分.md    # AI 读文档 → 聚类领域 → 调 matrix/json2toon
+@kbflow/prompts/K03-边界确认.md    # AI 评分 → checklist 生成复核清单
+@kbflow/prompts/K04-领域知识.md    # AI 调 skeleton 生成骨架 → 补语义
+...
+```
+
+### 3. 确定性工具命令（AI 通过 md 文档调用）
+
+| 命令 | 作用 |
+|---|---|
+| `init <kb_dir>` | 初始化知识库目录 |
+| `scan <project> -o <out>` | K01 事实扫描（纯脚本） |
+| `json2toon --json-file F --out F [--wrap key]` | AI 输出 json → 转 toon 落盘（写路径） |
+| `matrix --domains F --out F` | 领域建议 → 边界矩阵 |
+| `checklist gen/parse` | 评分→复核清单 md / 复核清单→决定 toon |
+| `skeleton <kind> --domain D --service S -o O` | 骨架生成（overview/interface/data-model/domain-overview/cross-links/service-meta/tech-config/dev-standards） |
+| `seal --domain D --service S -o O` | 事实密封（入口清单 + 表清单） |
+| `panorama --matrix F --service S --out F` | 领域依赖全景图 |
+| `sync <kb_dir>` | 框架→知识库同步 |
 
 运行测试：
 
 ```bash
 python -m pytest
 ```
+
+## 修改约定（维护 KBFlow 时）
+
+- 改流程顺序 / 门禁 / 暂停点 → 改主 md 文档
+- 改某个 AI 语义的具体做法（prompt、输出格式）→ 改对应 skill md 文档
+- 改事实提取逻辑 → 才改脚本（scanners / tools）
 
 ## 三个差异化改进
 
@@ -83,19 +95,20 @@ python -m pytest
 ```
 kbflow.py                  # CLI 入口
 kbflow/
-  toon/                    # TOON 编解码（唯一真相源格式）
-  scanners/                # K01 纯脚本扫描器
+  prompts/                 # md Prompt 文档（K01-K08 主流程 + skill 子文档）
+  scanners/                # 确定性扫描器（事实提取）
+  tools.py                 # 确定性工具命令（json2toon/matrix/checklist/skeleton/seal/panorama）
   gates/                   # 门禁体系（四档）
-  stages/                  # 阶段编排（K01-K08）
-  glossary/                # 业务名词解释（累积型知识）
+  stages/                  # 事实层函数（骨架生成/格式转换/表映射）
+  toon/                    # TOON 编解码
+  glossary/                # 业务名词提取（确定性）
   sync/                    # 框架→知识库同步
 tests/                     # 测试（pytest）
 examples/
   demo-java/               # 示例 Java 项目
   demo-kb/                 # 跑出来的知识库产物
-docs/plans/                # 实现计划
 ```
 
 ## 设计文档
 
-见 [DESIGN.md](DESIGN.md)：设计决策 + 三个差异化改进 + 已知优化方向（AST）。
+见 [DESIGN.md](DESIGN.md)：设计决策 + 三个差异化改进 + 已知优化方向。
