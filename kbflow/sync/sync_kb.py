@@ -3,12 +3,7 @@ from pathlib import Path
 
 MAPPINGS = {
     "prompts": {"source": "kbflow/prompts", "target": ".kbflow/prompts"},
-    "stages": {"source": "kbflow/stages", "target": ".kbflow/stages"},
-    "scanners": {"source": "kbflow/scanners", "target": ".kbflow/scanners"},
-    "gates": {"source": "kbflow/gates", "target": ".kbflow/gates"},
-    "toon": {"source": "kbflow/toon", "target": ".kbflow/toon"},
-    "glossary": {"source": "kbflow/glossary", "target": ".kbflow/glossary"},
-    "sync": {"source": "kbflow/sync", "target": ".kbflow/sync"},
+    "package": {"source": "kbflow", "target": ".kbflow/kbflow"},
     "entry": {"source": "kbflow.py", "target": ".kbflow/kbflow.py"},
 }
 
