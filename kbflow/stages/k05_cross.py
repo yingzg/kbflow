@@ -1,35 +1,4 @@
-import json
-import re
-
 from kbflow.stages.k04_knowledge import PLACEHOLDER
-
-_ENRICH_SYSTEM = (
-    "你是领域驱动设计专家。你根据领域的业务入口，补充领域定位和边界。只输出 JSON，不要多余文字。"
-)
-
-
-def enrich_domain_overview(llm, domain_name, overview, entries):
-    entry_desc = "\n".join(e["class_name"] for e in entries)
-    prompt = (
-        "领域「%s」有 %d 个业务入口：\n%s\n\n"
-        "请补充领域总览，返回 JSON：\n"
-        '{"description": 一句话领域定位, "scope": 领域边界描述（一句话，包含什么能力、不含什么）}\n\n'
-        "只输出 JSON。"
-        % (domain_name, len(entries), entry_desc)
-    )
-    resp = llm.complete(prompt, system=_ENRICH_SYSTEM)
-    m = re.search(r"\{.*\}", resp, re.DOTALL)
-    if not m:
-        return overview
-    try:
-        data = json.loads(m.group(0))
-    except json.JSONDecodeError:
-        return overview
-    if data.get("description"):
-        overview["description"] = data["description"]
-    if data.get("scope"):
-        overview["scope"] = data["scope"]
-    return overview
 
 
 def _guess_name(entry):

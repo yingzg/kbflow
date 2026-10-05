@@ -2,7 +2,6 @@ from kbflow.stages.k04_knowledge import PLACEHOLDER
 from kbflow.stages.k05_cross import (
     build_cross_service_links,
     build_domain_overview,
-    enrich_domain_overview,
 )
 
 
@@ -39,15 +38,3 @@ def test_cross_service_links_maps_node_id_to_class():
     links = build_cross_service_links(entries, topology, "transfer-service")
     assert links["api_entries"]["dubbo"][0]["class"] == "BocAppProviderImpl"
     assert links["external_system_dependencies_summary"][0]["systems"] == "AccountProvider"
-
-
-def test_enrich_domain_overview():
-    class FakeLLM:
-        def complete(self, prompt, system=""):
-            return '{"description": "面向渠道激励与活动政策管理", "scope": "包含政策配置与审批，不含对账结算"}'
-
-    entries = [{"id": "API-001", "class_name": "BocAppProviderImpl", "kind": "dubbo", "doc": "", "methods": ""}]
-    overview = build_domain_overview("政策管理", "transfer-service", entries)
-    overview = enrich_domain_overview(FakeLLM(), "政策管理", overview, entries)
-    assert overview["description"] == "面向渠道激励与活动政策管理"
-    assert overview["scope"] == "包含政策配置与审批，不含对账结算"

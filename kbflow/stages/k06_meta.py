@@ -1,40 +1,4 @@
-import json
-import re
-
 from kbflow.stages.k04_knowledge import PLACEHOLDER
-
-_ENRICH_SYSTEM = (
-    "你是领域知识文档写作者。你根据服务覆盖的领域和入口统计，"
-    "补充服务定位和核心职责。只输出 JSON，不要多余文字。"
-)
-
-
-def enrich_service_meta(llm, service_name, service_meta):
-    domain_coverage = service_meta.get("domain_coverage", [])
-    domain_desc = "\n".join(
-        "%s: %d 个入口" % (dc["domain"], dc["entry_count"])
-        for dc in domain_coverage
-    )
-    prompt = (
-        "服务「%s」覆盖 %d 个领域：\n%s\n\n"
-        "请补充服务概述，返回 JSON：\n"
-        '{"description": 一句话服务定位, "core_responsibilities": [3-5条核心职责]}\n\n'
-        "只输出 JSON。"
-        % (service_name, len(domain_coverage), domain_desc)
-    )
-    resp = llm.complete(prompt, system=_ENRICH_SYSTEM)
-    m = re.search(r"\{.*\}", resp, re.DOTALL)
-    if not m:
-        return service_meta
-    try:
-        data = json.loads(m.group(0))
-    except json.JSONDecodeError:
-        return service_meta
-    if data.get("description"):
-        service_meta["identity"]["description"] = data["description"]
-    if data.get("core_responsibilities"):
-        service_meta["identity"]["core_responsibilities"] = data["core_responsibilities"]
-    return service_meta
 
 
 def build_service_meta(service_name, entries, matrix, mapping):

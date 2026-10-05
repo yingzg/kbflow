@@ -2,7 +2,6 @@ from kbflow.stages.k06_meta import (
     build_dev_standards,
     build_service_meta,
     build_tech_config,
-    enrich_service_meta,
 )
 
 
@@ -41,17 +40,3 @@ def test_build_dev_standards():
     assert "*ProviderImpl" in patterns
     assert "*Task" in patterns
     assert standards["example_classes"][0]["role"] == "HTTP入口"
-
-
-def test_enrich_service_meta():
-    class FakeLLM:
-        def complete(self, prompt, system=""):
-            return '{"description": "面向国际返佣业务的服务", "core_responsibilities": ["政策管理", "预算管理"]}'
-
-    meta = {
-        "identity": {"name": "svc", "description": "[待AI补充]", "core_responsibilities": "[待AI补充]"},
-        "domain_coverage": [{"domain": "政策管理", "entry_count": 17}],
-    }
-    meta = enrich_service_meta(FakeLLM(), "svc", meta)
-    assert meta["identity"]["description"] == "面向国际返佣业务的服务"
-    assert meta["identity"]["core_responsibilities"] == ["政策管理", "预算管理"]

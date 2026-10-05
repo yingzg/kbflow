@@ -1,8 +1,6 @@
 from kbflow.scanners.sql_tables import extract_tables_from_sql, extract_tables_from_xml
 from kbflow.stages.k04_knowledge import (
     PLACEHOLDER,
-    _parse_methods,
-    enrich_overview,
     generate_data_model_skeleton,
     generate_interface_skeleton,
     generate_overview_skeleton,
@@ -64,11 +62,6 @@ def test_data_model_table_class_map():
     assert "TransferServiceImpl" in data_model["table_class_map"][0]["entry_classes"]
 
 
-def test_parse_methods():
-    methods = _parse_methods("approve(审批调拨单);cancel")
-    assert methods == [{"name": "approve", "doc": "审批调拨单"}, {"name": "cancel", "doc": ""}]
-
-
 def test_extract_tables_from_sql():
     content = (
         '@Select("SELECT * FROM acme_order WHERE id = #{id}")\n'
@@ -92,22 +85,3 @@ def test_extract_tables_from_xml():
     )
     tables = extract_tables_from_xml(xml)
     assert "acme_account_package" in tables
-
-
-def test_enrich_overview():
-    class FakeLLM:
-        def complete(self, prompt, system=""):
-            return (
-                '{"description": "面向渠道激励与活动政策管理",'
-                ' "core_responsibilities": ["政策配置", "批次投放"],'
-                ' "scenarios": {"SC-001": {"name": "活动政策管理", "desc": "活动政策配置与审批"}}}'
-            )
-
-    entries = [{"id": "API-001", "class_name": "BocAppProviderImpl", "kind": "dubbo",
-                "doc": "", "methods": "submitPolicyData;deletePolicyData"}]
-    overview = generate_overview_skeleton("政策管理", "svc", entries)
-    overview = enrich_overview(FakeLLM(), "政策管理", "svc", overview, entries)
-    assert overview["service_info"]["description"] == "面向渠道激励与活动政策管理"
-    assert overview["service_info"]["core_responsibilities"] == ["政策配置", "批次投放"]
-    assert overview["scenarios"]["P0"][0]["name"] == "活动政策管理"
-    assert overview["scenarios"]["P0"][0]["desc"] == "活动政策配置与审批"
