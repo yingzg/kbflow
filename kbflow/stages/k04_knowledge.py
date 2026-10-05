@@ -71,11 +71,11 @@ def _map_entry_tables(entries, topology, tables, mapper_tables):
         if not entry_node:
             continue
         visited = set()
-        queue = [entry_node]
+        queue = [(entry_node, 0)]
         tables_found = set()
         while queue:
-            node = queue.pop(0)
-            if node in visited:
+            node, depth = queue.pop(0)
+            if node in visited or depth > 2:
                 continue
             visited.add(node)
             cls = node_class.get(node, "")
@@ -85,7 +85,7 @@ def _map_entry_tables(entries, topology, tables, mapper_tables):
                 tables_found.add(_mapper_to_table(cls))
             for nxt in adj.get(node, []):
                 if nxt not in visited:
-                    queue.append(nxt)
+                    queue.append((nxt, depth + 1))
         if tables_found:
             result[e["id"]] = sorted(tables_found)
     return [{"entry_id": eid, "tables": "|".join(ts)} for eid, ts in result.items()]

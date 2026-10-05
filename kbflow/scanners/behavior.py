@@ -12,7 +12,7 @@ _JOB_RE = re.compile(r"@(?:Scheduled|XxlJob|ElasticJob)")
 _IMPLEMENTS_RE = re.compile(r"implements\s+([\w,\s<>]+?)(?:\s*\{|$)")
 _METHOD_RE = re.compile(
     r"(?:(?:public|private|protected|static|final|synchronized|abstract|native|default)\s+)*"
-    r"(?:[\w<>.?,\[\]\s]+?)\s+"
+    r"([\w<>.?,\[\]\s]+?)\s+"
     r"(\w+)\s*"
     r"\(([^()]*)\)"
     r"(?:\s*throws\s+[\w\s,]+)?"
@@ -36,8 +36,11 @@ _HTTP_METHODS = {
 def _extract_methods(content):
     methods = []
     for m in _METHOD_RE.finditer(content):
-        name = m.group(1)
-        params_str = m.group(2)
+        ret_type = m.group(1).strip()
+        name = m.group(2)
+        if ret_type.endswith(("new", "throw", "return")):
+            continue
+        params_str = m.group(3)
         params = [p.strip() for p in params_str.split(",") if p.strip()]
         doc = extract_method_doc(content, m.start())
         methods.append({"name": name, "params": params, "doc": doc})

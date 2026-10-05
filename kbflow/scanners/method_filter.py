@@ -1,10 +1,17 @@
 import re
 
+_JAVA_KEYWORDS = frozenset({
+    "if", "for", "while", "switch", "case", "default", "catch", "try", "finally",
+    "throw", "return", "new", "else", "do", "break", "continue", "synchronized",
+    "class", "interface", "enum", "assert", "super", "this", "instanceof",
+    "static", "import", "package", "public", "private", "protected",
+})
+
 HARD_SKIP_NAMES = frozenset({
     "toString", "hashCode", "equals", "clone", "getClass", "finalize",
     "wait", "notify", "notifyAll",
     "init", "destroy", "afterPropertiesSet", "onApplicationEvent", "close", "shutdown",
-})
+}).union(_JAVA_KEYWORDS)
 
 ACTION_VERBS = frozenset({
     "create", "insert", "add", "update", "modify", "delete", "remove", "approve",
