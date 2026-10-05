@@ -12,6 +12,7 @@ _POM_DEP_RE = re.compile(
     r"\s*(?:<version>([^<]+)</version>)?",
     re.DOTALL,
 )
+_IMPORT_RE = re.compile(r"import\s+([\w.]+)\s*;")
 
 
 def _maven_coordinates(index):
@@ -30,6 +31,8 @@ def scan_external_dependencies(index, internal_prefixes):
     by_annotation = []
     by_xml = []
     for f in index.all_files():
+        if "@DubboReference" not in f.content:
+            continue
         for m in _DUBBO_REF_FIELD_RE.finditer(f.content):
             type_name = m.group(1).strip().split()[-1]
             field_name = m.group(2)
@@ -70,9 +73,9 @@ def scan_external_dependencies(index, internal_prefixes):
 
 
 def _resolve_package(content, type_name):
-    m = re.search(r"import\s+([\w.]+\.%s)\s*;" % re.escape(type_name), content)
-    if m:
-        return m.group(1).rsplit(".", 1)[0]
+    for m in _IMPORT_RE.finditer(content):
+        if m.group(1).endswith("." + type_name):
+            return m.group(1).rsplit(".", 1)[0]
     m = re.search(r"package\s+([\w.]+)\s*;", content)
     return m.group(1) if m else ""
 

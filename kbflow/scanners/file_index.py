@@ -53,8 +53,9 @@ class FileIndex:
         return idx
 
     def _scan(self):
-        files = []
-        count = 0
+        from concurrent.futures import ThreadPoolExecutor
+
+        paths = []
         for path in self.project_dir.rglob("*.java"):
             try:
                 rel_parts = path.relative_to(self.project_dir).parts
@@ -62,24 +63,28 @@ class FileIndex:
                 continue
             if any(part in _SKIP_DIRS for part in rel_parts):
                 continue
+            paths.append(path)
+
+        def _load(p):
             try:
-                content = path.read_text(encoding="utf-8", errors="replace")
+                content = p.read_text(encoding="utf-8", errors="replace")
             except (OSError, PermissionError):
-                continue
-            package = ""
+                return None
             m = _PACKAGE_RE.search(content)
-            if m:
-                package = m.group(1)
-            class_name = ""
+            package = m.group(1) if m else ""
             m = _CLASS_RE.search(content)
-            if m:
-                class_name = m.group(1)
+            class_name = m.group(1) if m else ""
             if class_name.endswith("Test") or class_name.endswith("Tests"):
-                continue
-            files.append(JavaFile(path=path, content=content, package=package, class_name=class_name))
-            count += 1
-            if self._on_progress is not None and count % 500 == 0:
-                self._on_progress(count)
+                return None
+            return JavaFile(path=p, content=content, package=package, class_name=class_name)
+
+        files = []
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            for result in pool.map(_load, paths):
+                if result is not None:
+                    files.append(result)
+                    if self._on_progress is not None and len(files) % 500 == 0:
+                        self._on_progress(len(files))
         return files
 
     def all_files(self):
