@@ -123,7 +123,5 @@ def _is_interface(content):
 
 
 def _find_implementer(index, interface_name):
-    for f in index.all_files():
-        if re.search(r"\bclass\s+\w+\s+implements\s+[\w,\s<>]*\b%s\b" % re.escape(interface_name), f.content):
-            return f.class_name
-    return None
+    impls = index.find_implementers(interface_name)
+    return impls[0] if impls else None

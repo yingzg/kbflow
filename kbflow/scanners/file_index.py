@@ -37,6 +37,20 @@ class FileIndex:
         self.project_dir = Path(project_dir)
         self._on_progress = on_progress
         self._files = self._scan()
+        self._by_name = {}
+        for f in self._files:
+            self._by_name.setdefault(f.class_name, f)
+        self._implements = self._build_implements_index()
+
+    def _build_implements_index(self):
+        idx = {}
+        for f in self._files:
+            m = re.search(r"\bclass\s+\w+\s+implements\s+([\w,\s<>]+?)\s*\{", f.content)
+            if not m:
+                continue
+            for iface in re.findall(r"\w+", m.group(1)):
+                idx.setdefault(iface, []).append(f.class_name)
+        return idx
 
     def _scan(self):
         files = []
@@ -69,13 +83,13 @@ class FileIndex:
         return files
 
     def all_files(self):
-        return list(self._files)
+        return self._files
 
     def find_by_class_name(self, name):
-        for f in self._files:
-            if f.class_name == name:
-                return f
-        return None
+        return self._by_name.get(name)
+
+    def find_implementers(self, interface_name):
+        return self._implements.get(interface_name, [])
 
     def find_by_simple_name(self, name):
         return [f for f in self._files if f.class_name == name]
