@@ -38,6 +38,7 @@ from kbflow.stages.k07_index import generate_panorama_md
 from kbflow.stages.k08_narrate import seal_facts, generate_glossary, narrate
 from kbflow.sync.sync_kb import sync_to_kb
 from kbflow.toon import toon_dumps, toon_loads
+from kbflow import tools
 
 
 def _meta_dir(output):
@@ -656,6 +657,39 @@ def main(argv=None):
     p.add_argument("kb_dir")
     p.add_argument("--strict", action="store_true")
 
+    p = sub.add_parser("json2toon", help="AI 输出 json → 转 toon 落盘（写路径）")
+    p.add_argument("--json-file", required=True)
+    p.add_argument("--out", required=True)
+    p.add_argument("--wrap", help="把数据包进这个 key（如 reviews）")
+
+    p = sub.add_parser("matrix", help="K02 领域建议 → 边界矩阵")
+    p.add_argument("--domains", required=True)
+    p.add_argument("--out", required=True)
+
+    p = sub.add_parser("checklist", help="K03 复核清单生成/解析")
+    p.add_argument("action", choices=["gen", "parse"])
+    p.add_argument("--reviews", help="评分结果 toon（gen 用）")
+    p.add_argument("--checklist", help="复核清单 md（parse 用）")
+    p.add_argument("--out", required=True)
+    p.add_argument("--threshold", type=int, default=70)
+
+    p = sub.add_parser("skeleton", help="K04/K05/K06 骨架生成（带 [待AI补充] 占位）")
+    p.add_argument("kind", help="overview/interface/data-model/domain-overview/cross-links/service-meta/tech-config/dev-standards")
+    p.add_argument("--domain", required=True)
+    p.add_argument("--service", required=True)
+    p.add_argument("-o", "--output", default="kb")
+
+    p = sub.add_parser("seal", help="K08 事实密封（确定性部分）")
+    p.add_argument("--domain", required=True)
+    p.add_argument("--service", required=True)
+    p.add_argument("-o", "--output", default="kb")
+    p.add_argument("--out", help="输出 toon 路径（缺省打印 json）")
+
+    p = sub.add_parser("panorama", help="K07 全景图（确定性部分）")
+    p.add_argument("--matrix", required=True)
+    p.add_argument("--service", required=True)
+    p.add_argument("--out", required=True)
+
     args = parser.parse_args(argv)
     try:
         if args.cmd is None:
@@ -685,6 +719,20 @@ def main(argv=None):
             return _cmd_narrate(args)
         if args.cmd == "sync":
             return _cmd_sync(args)
+        if args.cmd == "json2toon":
+            return tools.cmd_json2toon(args)
+        if args.cmd == "matrix":
+            return tools.cmd_matrix(args)
+        if args.cmd == "checklist":
+            if args.action == "gen":
+                return tools.cmd_checklist_gen(args)
+            return tools.cmd_checklist_parse(args)
+        if args.cmd == "skeleton":
+            return tools.cmd_skeleton(args)
+        if args.cmd == "seal":
+            return tools.cmd_seal(args)
+        if args.cmd == "panorama":
+            return tools.cmd_panorama(args)
         print("命令未接线: %s" % args.cmd)
         return 0
     except LLMError as e:
