@@ -2,7 +2,7 @@ import hashlib
 from pathlib import Path
 
 MAPPINGS = {
-    "starter": {"source": "kb_starter.md", "target": "kb_starter.md"},
+    "starter": {"source": "kbflow/starter/kb_starter.md", "target": "kb_starter.md"},
     "prompts": {"source": "kbflow/prompts", "target": ".kbflow/prompts"},
     "package": {"source": "kbflow", "target": ".kbflow/kbflow"},
     "entry": {"source": "kbflow.py", "target": ".kbflow/kbflow.py"},
