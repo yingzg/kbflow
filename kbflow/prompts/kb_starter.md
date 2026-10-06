@@ -9,11 +9,13 @@
 
 ## 执行步骤
 
-### 步骤 1：确认项目路径和输出目录
+### 步骤 1：确定知识库目录和项目路径
 
-读取 `<输出目录>/projects.toon` 的 `directories` 区块，获取已注册的 Java 项目路径（父目录 + 项目名）。如果还没提供输出目录，询问用户输出目录。
+本 Prompt 文件位于 `<知识库目录>/.kbflow/prompts/kb_starter.md`。**知识库目录 = 本文件所在目录往上推两级**（`prompts/` → `.kbflow/` → 知识库目录）。用你的工作目录工具确认本文件的绝对路径，即可得到知识库目录。
 
-如果 `directories` 为空，提示用户：「请先用 `python kbflow.py init <输出目录> --project <Java项目路径>` 注册项目」，并询问项目路径。
+读取 `<知识库目录>/projects.toon` 的 `directories` 区块，获取已注册的 Java 项目路径（父目录 + 项目名）。
+
+如果 `directories` 为空，提示用户：「请先用 `python kbflow.py init <知识库目录> --project <Java项目路径>` 注册项目」。
 
 ### 步骤 2：检测当前阶段（断点续跑）
 

@@ -54,7 +54,7 @@ python kbflow.py sync /path/to/my-kb     # 同步 KBFlow 框架（prompts + 工�
 在 AI IDE（opencode / codex / claude code）里，`@` 启动文档：
 
 ```
-@/path/to/my-kb/.kbflow/prompts/kb_starter.md
+@ /path/to/my-kb/.kbflow/prompts/kb_starter.md
 ```
 
 AI 读启动文档 → 检测断点 → 执行当前阶段（如 K01）→ 完成后停下来。你按 Enter 关闭窗口，开新窗口重新 `@` 同一个 `kb_starter.md`，AI 断点续跑下一阶段（K02）→ ... 直到 K08。
