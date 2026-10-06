@@ -47,19 +47,22 @@ python kbflow.py sync /path/to/my-kb     # 同步 KBFlow 框架（prompts + 工�
 
 框架和知识库**分离**：KBFlow 框架（本仓库的 prompts + 工具）通过 `sync` 分发到知识库项目的 `.kbflow/`，知识库项目（产物）和框架（怎么构建）各自独立。
 
-### 2. 每阶段开新窗口 @ 同步后的 Prompt
+### 2. 开启 K01-K08 流程（每阶段开新窗口）
 
-在 AI IDE（opencode / codex / claude code）里，**每个阶段开一个新窗口**，`@` 同步后的 Prompt。阶段间靠产物文件交接，每个窗口只跑一个阶段，上下文不溢出：
+在 AI IDE（opencode / codex / claude code）里，**每个阶段开一个新窗口**，`@` 同步后的 Prompt：
 
 ```
-# 窗口 1：@my-kb/.kbflow/prompts/K01-事实扫描.md → AI 执行 scan → 关窗口
-# 窗口 2：@my-kb/.kbflow/prompts/K02-领域划分.md → AI 读 K01 产物 → 聚类 → 关窗口
-# 窗口 3：@my-kb/.kbflow/prompts/K03-边界确认.md → ... 直到 K08
+# 窗口 1（K01）：输入
+#   @/path/to/my-kb/.kbflow/prompts/K01-事实扫描.md
+#   项目路径：/path/to/java-project，输出目录：/path/to/my-kb
+#   → AI 执行 scan，产物落盘 my-kb/service-meta/，关窗口
+
+# 窗口 2（K02）：@/path/to/my-kb/.kbflow/prompts/K02-领域划分.md
+#   → AI 读 K01 产物，聚类领域，关窗口（后续阶段不用再附项目路径）
+# ... 直到 K08
 ```
 
-产物输出到 `my-kb/`（service-meta + 领域目录）。框架升级后重新 `sync` 即可，产物不受影响。
-
-**为什么每阶段开新窗口**：AI 上下文有限，串 8 阶段会溢出。每个窗口只跑一个阶段、只读「当前阶段 + 上一阶段产物」，上下文短。
+**关键**：第一步（K01）要附上「项目路径 + 输出目录」；后续阶段不用（产物已在知识库目录里）。每个窗口只跑一个阶段、只读「当前阶段 + 上一阶段产物」，上下文不溢出。
 
 > `scan` 等脚本命令也可手动 bash 跑（调试用）；标准流程是 AI 在 AI IDE 里执行。
 
