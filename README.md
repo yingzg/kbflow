@@ -47,24 +47,17 @@ python kbflow.py sync /path/to/my-kb     # 同步 KBFlow 框架（prompts + 工�
 
 框架和知识库**分离**：KBFlow 框架（本仓库的 prompts + 工具）通过 `sync` 分发到知识库项目的 `.kbflow/`，知识库项目（产物）和框架（怎么构建）各自独立。
 
-### 2. 开启 K01-K08 流程（每阶段开新窗口）
+### 2. 开启流程（@ kb_starter.md，每阶段一个窗口）
 
-在 AI IDE（opencode / codex / claude code）里，**每个阶段开一个新窗口**，`@` 同步后的 Prompt：
+在 AI IDE（opencode / codex / claude code）里，`@` 启动文档：
 
 ```
-# 窗口 1（K01）：输入
-#   @/path/to/my-kb/.kbflow/prompts/K01-事实扫描.md
-#   项目路径：/path/to/java-project，输出目录：/path/to/my-kb
-#   → AI 执行 scan，产物落盘 my-kb/service-meta/，关窗口
-
-# 窗口 2（K02）：@/path/to/my-kb/.kbflow/prompts/K02-领域划分.md
-#   → AI 读 K01 产物，聚类领域，关窗口（后续阶段不用再附项目路径）
-# ... 直到 K08
+@/path/to/my-kb/.kbflow/prompts/kb_starter.md
 ```
 
-**关键**：第一步（K01）要附上「项目路径 + 输出目录」；后续阶段不用（产物已在知识库目录里）。每个窗口只跑一个阶段、只读「当前阶段 + 上一阶段产物」，上下文不溢出。
+AI 读启动文档 → 检测断点 → 执行当前阶段（如 K01）→ 完成后停下来。你按 Enter 关闭窗口，开新窗口重新 `@` 同一个 `kb_starter.md`，AI 断点续跑下一阶段（K02）→ ... 直到 K08。
 
-> `scan` 等脚本命令也可手动 bash 跑（调试用）；标准流程是 AI 在 AI IDE 里执行。
+**全流程只 @ 一个 `kb_starter.md`**，但每个阶段一个窗口（上下文隔离）。断点续跑靠产物文件检测：某个阶段产物已存在则跳过。
 
 ### 3. 确定性工具命令（AI 通过 md 文档调用）
 
