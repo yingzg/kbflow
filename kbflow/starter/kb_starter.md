@@ -48,6 +48,17 @@
 
 静默读取 `<知识库目录>/projects.toon` 的 `directories` 区块，获取已注册的 Java 项目路径。
 
+**projects.toon 的 directories 格式**（toon 紧凑格式）：
+
+```
+directories:
+  /mnt/g/workSpace[1]: mi-intl-scheme
+```
+
+- 冒号前是「父目录」，冒号后是「项目名」（多个用逗号分隔）。
+- 父目录里的 `[1]` 是 **toon 的数组计数标记**（表示该父目录下有 1 个项目），**不是路径的一部分**。
+- 实际项目路径 = `父目录/项目名`，例如 `/mnt/g/workSpace/mi-intl-scheme`。
+
 如果 `directories` 为空，才提示用户：「请先用 `python kbflow.py init <知识库目录> --project <Java项目路径>` 注册项目」。
 
 ### 步骤 2：检测当前阶段
