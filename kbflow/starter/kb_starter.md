@@ -32,7 +32,12 @@
 
 ### 3. 执行当前阶段
 
-- **K01**：直接执行 `python3 .kbflow/kbflow.py scan <项目路径> -o <知识库目录>`，原样展示脚本进度。
+- **K01**：直接执行 scan（**scan 要 3-4 分钟，远超 bash 默认 120s 超时，必须用 `timeout 600` 包裹，超时了就重跑一次**）：
+
+  ```bash
+  timeout 600 python3 .kbflow/kbflow.py scan <项目路径> -o <知识库目录>
+  ```
+
 - **K02-K08**：读 `<知识库目录>/.kbflow/prompts/K0X-xxx.md`，按文档执行。
 
 ### 4. 完成后输出数字菜单
