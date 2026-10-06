@@ -41,9 +41,11 @@ kbflow/scanners/ + tools  ← 确定性事实提取 + 工具命令
 ### 1. 初始化知识库 + 同步框架
 
 ```bash
-python kbflow.py init /path/to/my-kb     # 初始化知识库目录（指定路径）
+python kbflow.py init /path/to/my-kb --project /path/to/java-project   # 初始化 + 注册项目路径
 python kbflow.py sync /path/to/my-kb     # 同步 KBFlow 框架（prompts + 工具）到 /path/to/my-kb/.kbflow/
 ```
+
+`--project` 把 Java 项目路径注册到 `projects.toon` 的 `directories` 区块，后续 K01 读它获取项目路径，无需重复输入。
 
 框架和知识库**分离**：KBFlow 框架（本仓库的 prompts + 工具）通过 `sync` 分发到知识库项目的 `.kbflow/`，知识库项目（产物）和框架（怎么构建）各自独立。
 

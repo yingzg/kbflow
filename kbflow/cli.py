@@ -72,9 +72,21 @@ def _cmd_scan(args):
 def _cmd_init(args):
     kb = Path(args.kb_dir)
     kb.mkdir(parents=True, exist_ok=True)
-    projects = {"metadata": {"knowledge_base": str(kb.resolve())}, "directories": []}
+    directories = {}
+    for proj in getattr(args, "project", []) or []:
+        p = Path(proj).resolve()
+        directories.setdefault(str(p.parent), []).append(p.name)
+    projects = {
+        "metadata": {"knowledge_base": str(kb.resolve())},
+        "directories": directories,
+    }
     (kb / "projects.toon").write_text(toon_dumps(projects), encoding="utf-8")
     print("初始化知识库目录: %s" % kb)
+    if directories:
+        print("  已注册项目: %s" % ", ".join(
+            "%s%s" % (parent, ("/"+"/".join(names)) if names else "")
+            for parent, names in directories.items()
+        ))
     return 0
 
 
@@ -98,6 +110,7 @@ def main(argv=None):
 
     p = sub.add_parser("init", help="初始化知识库目录（指定路径，绝对或相对）")
     p.add_argument("kb_dir", nargs="?", default="kb", metavar="知识库目录")
+    p.add_argument("--project", action="append", help="Java 项目路径（可多次，注册到 projects.toon）")
 
     p = sub.add_parser("config", help="配置数据库连接（可选，写入 ~/.kbflow/config.ini）")
 
