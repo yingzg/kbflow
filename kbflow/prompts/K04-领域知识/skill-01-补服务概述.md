@@ -22,7 +22,7 @@
 ## 输出
 
 ```bash
-python kbflow.py json2toon --json-file 概述.json --out <输出目录>/<领域>/<服务>/01-服务概述.toon
+python3 .kbflow/kbflow.py json2toon --json-file 概述.json --out <输出目录>/<领域>/<服务>/01-服务概述.toon
 ```
 
 完整结构示例：

@@ -16,7 +16,7 @@
 输出 json 数组，写文件：
 
 ```bash
-python kbflow.py json2toon --json-file 评分结果.json --out <输出目录>/service-meta/reviews.toon --wrap reviews
+python3 .kbflow/kbflow.py json2toon --json-file 评分结果.json --out <输出目录>/service-meta/reviews.toon --wrap reviews
 ```
 
 json 结构：

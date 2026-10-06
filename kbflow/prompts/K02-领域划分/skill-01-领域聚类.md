@@ -19,7 +19,7 @@
 输出 json 数组，写文件：
 
 ```bash
-python kbflow.py json2toon --json-file 领域建议.json --out <输出目录>/service-meta/domain_suggestion.toon --wrap domains
+python3 .kbflow/kbflow.py json2toon --json-file 领域建议.json --out <输出目录>/service-meta/domain_suggestion.toon --wrap domains
 ```
 
 注意：多值字段用 `|` 拼接成字符串，不要用数组（toon 不支持嵌套数组）：

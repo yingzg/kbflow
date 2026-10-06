@@ -20,6 +20,12 @@ def load_entries(meta_dir):
     return entries
 
 
+def _as_str(value, sep=","):
+    if isinstance(value, (list, tuple)):
+        return sep.join(str(v) for v in value)
+    return value or ""
+
+
 def build_boundary_matrix(domains):
     matrix = []
     for i, d in enumerate(domains, 1):
@@ -27,8 +33,8 @@ def build_boundary_matrix(domains):
             "id": "D%d" % i,
             "name": d["name"],
             "responsibility": d.get("responsibility", ""),
-            "key_entities": ",".join(d.get("key_entities", [])),
-            "boundary_included": "|".join(d.get("boundary_included", [])),
-            "boundary_excluded": "|".join(d.get("boundary_excluded", [])),
+            "key_entities": _as_str(d.get("key_entities", ""), ","),
+            "boundary_included": _as_str(d.get("boundary_included", ""), "|"),
+            "boundary_excluded": _as_str(d.get("boundary_excluded", ""), "|"),
         })
     return matrix

@@ -19,7 +19,7 @@
 ## 输出
 
 ```bash
-python kbflow.py json2toon --json-file 总览.json --out <输出目录>/<领域>/01-领域总览.toon
+python3 .kbflow/kbflow.py json2toon --json-file 总览.json --out <输出目录>/<领域>/01-领域总览.toon
 ```
 
 完整结构示例（`core_capabilities` 用数组，每条「类别：能力描述」）：

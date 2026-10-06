@@ -16,13 +16,13 @@
 输出 json 数组，写文件：
 
 ```bash
-python kbflow.py json2toon --json-file 入口分类.json --out <输出目录>/service-meta/domain_mapping.toon --wrap domain_mapping
+python3 .kbflow/kbflow.py json2toon --json-file 入口分类.json --out <输出目录>/service-meta/domain_mapping.toon --wrap domain_mapping
 ```
 
-json 结构：
+json 结构（`domain` 用领域名，不是 D1/D2 的 id）：
 
 ```json
-[{"entry_id":"API-001","domain_ref":"D1","reason":"StockServiceImpl→库存"}]
+[{"entry_id":"API-001","domain":"库存","reason":"StockServiceImpl→库存"}]
 ```
 
-注意：`domain_ref` 用边界矩阵里的领域 id（D1/D2…），不是领域名。
+注意：这里 `domain` 填「领域名」（如「库存」），后续主流程会把 `domain` 转成 `domain_ref`（D1/D2）。

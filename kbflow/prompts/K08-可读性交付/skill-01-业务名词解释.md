@@ -14,7 +14,7 @@
 输出 json 数组，写文件：
 
 ```bash
-python kbflow.py json2toon --json-file glossary.json --out <输出目录>/<领域>/<服务>/_glossary.toon --wrap glossary
+python3 .kbflow/kbflow.py json2toon --json-file glossary.json --out <输出目录>/<领域>/<服务>/_glossary.toon --wrap glossary
 ```
 
 json 结构：

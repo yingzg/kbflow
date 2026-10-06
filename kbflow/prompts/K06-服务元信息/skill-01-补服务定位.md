@@ -16,5 +16,5 @@
 ## 输出
 
 ```bash
-python kbflow.py json2toon --json-file 元信息.json --out <输出目录>/<服务>/service-meta/服务元信息.toon
+python3 .kbflow/kbflow.py json2toon --json-file 元信息.json --out <输出目录>/<服务>/service-meta/服务元信息.toon
 ```
