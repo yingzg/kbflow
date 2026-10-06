@@ -46,15 +46,16 @@ python kbflow.py sync /path/to/my-kb     # 同步 KBFlow 框架（prompts + 工�
 
 框架和知识库分离：KBFlow 框架（prompts + 工具）通过 `sync` 分发到知识库项目的 `.kbflow/`，知识库项目（产物）和框架（怎么构建）各自独立。
 
-### 第 2 步：开启流程（@ kb_starter.md，每阶段一个窗口）
+### 第 2 步：开启流程（在知识库目录下 @ kb_starter.md）
 
-在 AI IDE（opencode / codex / claude code）里，`@` 启动文档：
+**在知识库目录下打开 AI IDE**（opencode / codex / claude code），`@` 根目录的启动文档（相对路径）：
 
 ```
-@ /path/to/my-kb/.kbflow/prompts/kb_starter.md
+cd /path/to/my-kb
+@ kb_starter.md
 ```
 
-AI 读启动文档 → 检测断点 → 执行当前阶段（如 K01）→ 完成后停下来。你按 Enter 关闭窗口，开新窗口重新 `@` 同一个 `kb_starter.md`，AI 断点续跑下一阶段（K02）→ ... 直到 K08。
+AI 读启动文档 → 检测断点 → 执行当前阶段（如 K01）→ 完成后停下来。你按 Enter 关闭窗口，开新窗口重新 `@ kb_starter.md`，AI 断点续跑下一阶段（K02）→ ... 直到 K08。
 
 **全流程只 @ 一个 `kb_starter.md`**，但每个阶段一个窗口（上下文隔离）。断点续跑靠产物文件检测：某个阶段产物已存在则跳过。
 
