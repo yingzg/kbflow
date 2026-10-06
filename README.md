@@ -41,8 +41,8 @@ kbflow/scanners/ + tools  ← 确定性事实提取 + 工具命令
 ### 1. 初始化知识库 + 同步框架
 
 ```bash
-python kbflow.py init my-kb     # 初始化知识库目录
-python kbflow.py sync my-kb     # 同步 KBFlow 框架（prompts + 工具）到 my-kb/.kbflow/
+python kbflow.py init /path/to/my-kb     # 初始化知识库目录（指定路径）
+python kbflow.py sync /path/to/my-kb     # 同步 KBFlow 框架（prompts + 工具）到 /path/to/my-kb/.kbflow/
 ```
 
 框架和知识库**分离**：KBFlow 框架（本仓库的 prompts + 工具）通过 `sync` 分发到知识库项目的 `.kbflow/`，知识库项目（产物）和框架（怎么构建）各自独立。
@@ -67,7 +67,7 @@ python kbflow.py sync my-kb     # 同步 KBFlow 框架（prompts + 工具）到 
 
 | 命令 | 作用 |
 |---|---|
-| `init <kb_dir>` | 初始化知识库目录 |
+| `init <知识库目录>` | 初始化知识库目录（绝对或相对路径） |
 | `scan <project> -o <out>` | K01 事实扫描（纯脚本） |
 | `json2toon --json-file F --out F [--wrap key]` | AI 输出 json → 转 toon 落盘（写路径） |
 | `matrix --domains F --out F` | 领域建议 → 边界矩阵 |

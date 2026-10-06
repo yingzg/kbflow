@@ -96,8 +96,8 @@ def main(argv=None):
     )
     sub = parser.add_subparsers(dest="cmd")
 
-    p = sub.add_parser("init", help="初始化知识库目录")
-    p.add_argument("kb_dir", nargs="?", default="kb")
+    p = sub.add_parser("init", help="初始化知识库目录（指定路径，绝对或相对）")
+    p.add_argument("kb_dir", nargs="?", default="kb", metavar="知识库目录")
 
     p = sub.add_parser("config", help="配置数据库连接（可选，写入 ~/.kbflow/config.ini）")
 
